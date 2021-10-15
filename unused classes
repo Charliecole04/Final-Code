@@ -1,0 +1,242 @@
+class Overview_Client(Frame):
+  #old
+  def __init__(self, master):
+    super().__init__()
+  
+    global next_lesson
+    global lesson_pro
+    self.master = master
+    self.master.title('Overview')
+    self.master.geometry('505x225')
+    self.configure(background = "#0a1b40")
+    self.pack(fill=tk.BOTH, expand=1)
+    # Lookup bookings info on DB
+    bookings_data = db.get_bookings_data_client(self.master.cur, userdata[0])
+    current_datetime = datetime.now()
+    self.upcoming_lessons = []
+    # get next lesson
+    for booking in bookings_data:
+      bookings_date = datetime.strptime(booking[2], '%Y-%m-%d %H:%M:%S')
+      if bookings_date >= current_datetime:
+        self.upcoming_lessons.append((booking[0], booking[1], bookings_date))
+    if self.upcoming_lessons == []: #Figures out if the customer actually has a lesson booked or not
+      message = tk.StringVar(self, value="You have no lessons booked currently.")
+    else:
+      next_lesson = min(self.upcoming_lessons, key=lambda x: x[2]) # sort by date ([2])- need to est!!
+      lesson_pro = db.get_pro_data(self.master.cur, next_lesson[1])
+      message = tk.StringVar(self, value=f"Next lesson booked for\n{datetime.strftime(next_lesson[2],'%A, %d %B %Y at %H:%M')}\nwith {lesson_pro[1]} {lesson_pro[2]}")
+    testfont = tk.font.Font(family="Helvetica", size=14, weight="bold")
+    tk.Label(self, textvariable=message, background = "#0a1b40", foreground="white", font=testfont)pack(pady=50) #This label creates the main message for the screen and takes the text from the message ariable above and displays it.
+  
+    tk.Button(self, text="Change / Cancel Lesson", background = "#0a1b40", foreground = "white", raplength="130", command=self.edit_lesson).place(x=1, y=175) #This creates a button the it used to hange or cancel a lesson
+    tk.Button(self, text="Book Now!!!", background = "#0a1b40", foreground = "white", height=2, ommand=self.book_lesson).place(x=385, y=175) #This button allows the user to create a new booking.
+  def edit_lesson(self):
+    Edit(self.master, next_lesson)
+    self.destroy()
+  def book_lesson(self):
+    CalendarMonth(self.master)
+    self.destroy()
+
+
+
+class SummaryPage(Frame):
+
+  def __init__(self, master):
+    super().__init__()
+    self.master = master
+    self.master.title('Summary page') # These lines configure the summary page
+    self.master.geometry('570x185')
+    # self.master.configure(background="#0a1b40")
+    self.configure(background="#0a1b40")   #0a1b40
+    self.pack(fill=tk.BOTH, expand=1)
+
+    tk.Label(self, text="Book your online lesson here at Rayleigh Golf Range",background = "#0a1b40", fg="White" ).grid(row=0, column=0, columnspan=6) #creates the labels for the window but places them in the window
+
+    tk.Label(self, text="Pricing: 30 minute lesson = £25", background = "#0a1b40", fg="White").grid(row=1, column=0, columnspan=6)
+
+    tk.Label(self, text="Meet The Team:", background = "#0a1b40", fg="White").grid(row=2, column=0, columnspan=6) #0a1b40
+
+    tk.Label(self, text="Matt King", bd=1, fg='black', bg='light grey', relief='solid', wraplength=60, padx=10, pady=10, height=2, width=8).grid(row=3, column=0) #Each one of these creates labels for each pro and placaes them correctly in the self.master
+    tk.Label(self, text="Steve Jackson", bd=1, fg='black', bg='light grey', relief='solid', wraplength=70, padx=10, pady=10, height=2, width=8).grid(row=3, column=1)
+    tk.Label(self, text="Luke Gosling", bd=1, fg='black', bg='light grey', relief='solid', wraplength=70, padx=10, pady=10, height=2, width=8).grid(row=3, column=2)
+    tk.Label(self, text="Chris Lightfoot", bd=1, fg='black', bg='light grey', relief='solid', wraplength=90, padx=10, pady=10, height=2, width=8).grid(row=3, column=3)
+    tk.Label(self, text="Paul Barham", bd=1, fg='black', bg='light grey', relief='solid', wraplength=70, padx=10, pady=10, height=2, width=8).grid(row=3, column=4)
+    tk.Label(self, text="Lucy Clarke", bd=1, fg='black', bg='light grey', relief='solid', wraplength=60, padx=10, pady=10, height=2, width=8).grid(row=3, column=5)
+
+    tk.Label(self, text="""Please note that cancellations within 24
+    hours of the lesson are chargeable""", background = "#0a1b40", fg="White").place(x=1, y=140) #creates a label for the cancellation notice
+
+    tk.Button(self, text="Proceed to Overview", background = "#0a1b40", foreground = "white", command=self.proceed_to_overview).place(x=400, y=150) #creates a button to proceed tot he login page
+
+  def proceed_to_overview(self):
+    Overview_Client(self.master)
+    self.destroy()
+
+
+class AllPros(Frame):
+  
+  def __init__(self, master, date_):
+    super().__init__()
+    self.master = master
+    self.master.title('Available Pros')
+    self.master.geometry('800x780')
+    self.configure(background = "#0a1b40")
+    self.date = date_
+    self.pack(fill=tk.BOTH, expand=1)
+
+    all_pros = db.get_pro_data_all(self.master.cur)
+    
+    # create custom 2D dictionary from all_pros data
+    pro_data = {}
+    for i in range(1, len(all_pros)):  # all pros except admin (record 1)
+      pro_id = all_pros[i][0]
+      pro_data[pro_id] = {}
+      for j in range(len(all_pros[i])):
+        pro_data[pro_id]["ProID"] = pro_id
+        pro_data[pro_id]["FirstName"] = all_pros[i][1]
+        pro_data[pro_id]["Surname"] = all_pros[i][2]
+        pro_data[pro_id]["Phone"] = all_pros[i][3]
+    
+    tk.Label(self, text=f"Available pros and times on {datetime.strftime(self.date, '%A, %d %B %Y')}:", background = "#0a1b40", fg="white").grid(row=0, rowspan=2, column=3, columnspan=7, sticky="NEWS")
+
+    # make conditional!
+    time_font = font.Font(overstrike=1) # this creates the overstrike font 
+    time_font0 = font.Font(overstrike=0) # this is to make all of the times the same size as the overstriked times
+
+    # create labels and buttons
+    labels = []
+    buttons = []
+    for pro in pro_data.values():
+      labels.append(tk.Label(self, text=pro["FirstName"] + "\n" + pro["Surname"], bd=1, fg='black', bg='light grey', relief='solid', wraplength=70, padx=10, pady=10, height=2, width=8))
+      times_ = []
+      time_ = datetime.strptime("09:00", "%H:%M")
+      for i in range(24):
+        times_.append(tk.Button(self, text=datetime.strftime(time_, "%H:%M"), font=time_font0))
+        time_ += timedelta(minutes=30)
+      buttons.append(times_)
+      
+    # arrange labels and buttons in grid
+    row = 2
+    for i in range(2):  # label rows
+      column = 1
+      for j in range(3):  # label columns
+        labels[j+(i*3)].grid(row=row, column=column, columnspan=3, sticky="NEWS")
+        for k in range(3):  # button columns
+          for l in range(8):  # button rows
+            row += 1
+            buttons[j+(i*3)][l+(k*8)].grid(row=row, column=column)
+          row -= 8
+          column += 1
+        column += 1
+      column -= 3
+      row += 10
+
+    tk.Button(self, text="View Your\nPros", fg="White", bg="#0a1b40", command=self.view_yourpro).grid(row=21, column=1, columnspan=2, pady=10, sticky="NEWS")
+    
+    tk.Button(self, text="Return to\nOverview", fg="White", bg="#0a1b40", command=self.back_to_overview).grid(row=21, column=10, columnspan=2, pady=10, sticky="NEWS")
+
+    self.grid_columnconfigure(0, minsize=20)
+    self.grid_columnconfigure(4, minsize=17)
+    self.grid_columnconfigure(8, minsize=17)
+    self.grid_rowconfigure(0, minsize=20)
+    self.grid_rowconfigure(1, minsize=20)
+    self.grid_rowconfigure(11, minsize=15)
+
+  def back_to_overview(self):
+    """ """
+    Overview_Client(self.master)
+    self.destroy()
+
+  def view_yourpro(self):
+    """ """
+    YourPro(self.master, self.date)
+    self.destroy() 
+
+
+
+class YourPro(Frame):
+
+  def __init__(self, master, date_):
+    super().__init__()
+    self.master = master
+    self.master.title("Your Pro's Availability")
+    self.master.geometry("440x460")
+    self.configure(background = "#0a1b40")
+    self.date = date_
+    self.pack(fill=tk.BOTH, expand=1)
+
+    pro_id = lesson_pro[0]
+    pro_firstname = lesson_pro[1]
+    pro_surname = lesson_pro[2]
+
+    tk.Label(self, text=f"Available Times on {datetime.strftime(self.date, '%A, %d %B %Y')}", background="#0a1b40", fg="white", pady=5, wraplength=160).grid(row=0, column=1, columnspan=4, sticky="NEWS")
+
+    # make conditional!!!
+    time_font = font.Font(overstrike=1) # this creates the overstrike font 
+    time_font0 = font.Font(overstrike=0)
+
+    # create label and buttons
+    tk.Label(self, text=pro_firstname + " " + pro_surname, bd=1, fg='black', bg='light grey', relief='solid', wraplength=110, padx=10, pady=10, height=2, width=8).grid(row=2, column=2, columnspan=3, sticky="NEWS")
+    
+    buttons = []
+    time_ = datetime.strptime("09:00", "%H:%M")
+    for i in range(24):
+      buttons.append(tk.Button(self, text=datetime.strftime(time_, "%H:%M"), font=time_font0))
+      time_ += timedelta(minutes=30)
+      
+    # arrange buttons in grid
+    row = 3
+    column = 2
+    for k in range(3):  # button columns
+      for l in range(8):  # button rows
+        row += 1
+        buttons[l+(k*8)].grid(row=row, column=column)
+      row -= 8
+      column += 1
+
+    tk.Button(self, text="View All\nPros", fg="White", bg="#0a1b40", command=self.view_allpros).grid(row=12, column=0, padx=10, pady=10)
+
+    tk.Button(self, text="Return to\nOverview", fg="White", bg="#0a1b40", command=self.back_to_overview).grid(row=12, column=5, padx=10, pady=10)
+
+
+  def back_to_overview(self):
+    """ """
+    Overview_Client(self.master)
+    self.destroy()
+  
+  def view_allpros(self):
+    """ """
+    AllPros(self.master, self.date)
+    self.destroy()  
+
+
+class Edit(Frame): #---------------------------------------------------------Do we use this class?
+  
+  def __init__(self, master, next_lesson):
+    super().__init__()
+    self.master = master
+    self.master.title('Edit')
+    self.master.geometry('500x225')
+    self.configure(background = "#0a1b40")
+    self.pack(fill=tk.BOTH, expand=1)
+
+    self.date = next_lesson[2].strftime("%A, %d %B %Y at %H:%M")
+
+    tk.Label(self, background = "#0a1b40", fg="white", text=f"""Would you like to cancel your lesson on 
+    {self.date}?""").pack(pady=10) #This asks the user for confirmation that the lesson will be cancelled
+
+    tk.Button(self, text="Delete Booking", background = "#0a1b40", foreground = "white", command=self.delete).place(x=75, y=108) #This creates a button to cancel the lesson
+
+    tk.Button(self, text="Reschedule Booking", background = "#0a1b40", foreground = "white", command=self.reschedule).place(x=300, y=108) #This creates a button to change the lesson
+
+    tk.Label(self, text="""Please note that cancellations within 24
+    hours of the lesson are chargeable""", background = "#0a1b40", fg="white").place(x=100, y=175) #This displays the cancelation notice
+
+  def delete(self): # will call booking details for deletion...
+    print('Lesson cancelled')  # testing
+    Confirm(self, self.date)
+    # self.destroy()
+
+  def reschedule(self):
+    CalendarMonth(self.master)
+    self.destroy()
