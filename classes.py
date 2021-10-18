@@ -4,15 +4,15 @@ import time
 import tkinter as tk
 from datetime import datetime, timedelta
 from tkcalendar import Calendar, DateEntry
-from tkinter import font, ttk
+from tkinter import font
 
 
-# global variables ------------------------------------------------------------
+# # global variables ------------------------------------------------------------
 
-user_is_pro = bool()
-userdata = list()
-next_lesson = list()
-lesson_pro = list()
+# user_is_pro = bool()
+# userdata = list()
+# next_lesson = list()
+# lesson_pro = list()
 
 # custom Tk classes -----------------------------------------------------------
 
@@ -1225,26 +1225,6 @@ class RemovePro(Toplevel):
 
 # global subroutines ----------------------------------------------------------
 
-def popup(parent, msg): #----------------Not used
-
-  window = Toplevel()
-
-  def confirm():
-    window.destroy()
-    return True
-  
-  def cancel():
-    window.destroy()
-    return False
-    
-  Label(window, text=msg).pack()
-  Button(window, text="Confirm", command=confirm).pack()
-  Button(window, text="Cancel", command=cancel).pack()
-  
-
-
-
-
 def is_valid_email(email_address):
   """Returns True if email address syntax is valid."""
   pattern = r"^(\S+)(@)(\S+)([.])(\S+)$"
@@ -1256,25 +1236,25 @@ def is_valid_email(email_address):
 
 # testing ---------------------------------------------------------------------
 
-if __name__ == '__main__':
-  import main
+# if __name__ == '__main__':
+#   import main
 
-# ---
-testing_as_pro_user = False  # <--adjust---
-testing_as_client = 1      # <--adjust---
-# ---
+# # ---
+# testing_as_pro_user = False  # <--adjust---
+# testing_as_client = 1      # <--adjust---
+# # ---
 
-if testing_as_pro_user:
-  user_is_pro = True
-  userdata = [1000, "Pro", "Administrator", "00000 000000"]
-else:
-  user_is_pro = False
-  if testing_as_client == 1:
-    userdata = [1000, "Test", "Client 01", "1 Client Road", "Clientville", "Clientshire", "CL1 3NT", "01234 567891"]
-  elif testing_as_client == 2:
-    userdata = [1001, "Test", "Client 02", "2 Client Road", "Clientville", "Clientshire", "CL2 3NT", "01234 567892"]
-  elif testing_as_client == 3:
-    userdata = [1002, "Test", "Client 03", "3 Client Road", "Clientville", "Clientshire", "CL3 3NT", "01234 567893"]
+# if testing_as_pro_user:
+#   user_is_pro = True
+#   userdata = [1000, "Pro", "Administrator", "00000 000000"]
+# else:
+#   user_is_pro = False
+#   if testing_as_client == 1:
+#     userdata = [1000, "Test", "Client 01", "1 Client Road", "Clientville", "Clientshire", "CL1 3NT", "01234 567891"]
+#   elif testing_as_client == 2:
+#     userdata = [1001, "Test", "Client 02", "2 Client Road", "Clientville", "Clientshire", "CL2 3NT", "01234 567892"]
+#   elif testing_as_client == 3:
+#     userdata = [1002, "Test", "Client 03", "3 Client Road", "Clientville", "Clientshire", "CL3 3NT", "01234 567893"]
 
 # -----------------------------------------------------------------------------
 

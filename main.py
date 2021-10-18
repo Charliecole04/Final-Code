@@ -1,9 +1,17 @@
 import db
 import os
 import classes
-from datetime import datetime  # to be removed after testing
 import tkinter as tk
 
+
+# global variables ------------------------------------------------------------
+
+user_is_pro = bool()
+userdata = list()
+next_lesson = list()
+lesson_pro = list()
+
+# ----------------------------------------------------------------------------
 
 class Tk(tk.Tk):
   """Custom Tk class which includes database connection and cursor objects,
@@ -31,16 +39,10 @@ root = Tk(con, cur)
 root.title('Discount Golf Store Lesson Booking System')
 root.geometry('450x275')
 
-# # starting frame
-# classes.Login(root)
-
-
-# launch application (tests)...
+# starting frame
 classes.Login(root)
-#classes.Overview_Client(root)
-#classes.CalendarDay(root, datetime.today().date())
 
-
+# run mainloop
 root.lift()
 root.mainloop()
 

@@ -211,6 +211,7 @@ class YourPro(Frame):
 
 
 class Edit(Frame):
+
   
   def __init__(self, master, next_lesson):
     super().__init__()
@@ -240,3 +241,21 @@ class Edit(Frame):
   def reschedule(self):
     CalendarMonth(self.master)
     self.destroy()
+
+
+
+def popup(parent, msg): #----------------Not used
+
+  window = Toplevel()
+
+  def confirm():
+    window.destroy()
+    return True
+  
+  def cancel():
+    window.destroy()
+    return False
+    
+  Label(window, text=msg).pack()
+  Button(window, text="Confirm", command=confirm).pack()
+  Button(window, text="Cancel", command=cancel).pack()

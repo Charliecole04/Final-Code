@@ -13,10 +13,10 @@ def connect(dbname):
   return con, cur
 
 
-def convert_to_dict(descriptions, records):
-  """Returns a list of records as dicts using field names for keys."""
-  field_names = [descriptions[i][0] for i in range(len(descriptions))]
-  return [dict(zip(field_names, records[i])) for i in range(len(records))]
+# def convert_to_dict(descriptions, records):
+#   """Returns a list of records as dicts using field names for keys."""
+#   field_names = [descriptions[i][0] for i in range(len(descriptions))]
+#   return [dict(zip(field_names, records[i])) for i in range(len(records))]
 
 
 def populate(con, cur):
@@ -260,7 +260,7 @@ def deactivate_pro(con, cur, pro_id):
   ))
   con.commit()
 
-# testing - to be removed -----
-if __name__ == "__main__":
-  import main
+# # testing - to be removed -----
+# if __name__ == "__main__":
+#   import main
 
