@@ -1290,6 +1290,3 @@ fix code without testing info?
 • fix grab_release to not also release 3rd tier widgets (i.e. login -> register -> toplevel)
 
 # Last Tweaks: search client by name instead of id,menu widget to navigate windows, use scrollwheel fot common window size """  
-
-#go through each pages dimensions and fix (not on replit)
-
